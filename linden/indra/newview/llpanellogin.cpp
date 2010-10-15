@@ -82,8 +82,9 @@
 #include "llfloatertos.h"
 
 #include "llglheaders.h"
+#include <vector>
 
-// [RLVa:KB]
+// [RLVa:KB] - Version: 1.23.4 | Checked: 2009-07-08 (RLVa-1.0.0e)
 #include "rlvhandler.h"
 // [/RLVa:KB]
 
@@ -208,9 +209,6 @@ LLPanelLogin::LLPanelLogin(const LLRect &rect,
 	reshape(rect.getWidth(), rect.getHeight());
 
 #if !USE_VIEWER_AUTH
-	childSetPrevalidate("first_name_edit", LLLineEditor::prevalidatePrintableNoSpace);
-	childSetPrevalidate("last_name_edit", LLLineEditor::prevalidatePrintableNoSpace);
-
 	childSetCommitCallback("password_edit", mungePassword);
 	childSetKeystrokeCallback("password_edit", onPassKey, this);
 	childSetUserData("password_edit", this);
@@ -235,18 +233,21 @@ LLPanelLogin::LLPanelLogin(const LLRect &rect,
 	if (!sim_string.empty())
 	{
 		// Replace "<Type region name>" with this region name
-		combo->remove(2);
+		//Typed region
+		combo->remove(1);
 		combo->add( sim_string );
 		combo->setTextEntry(sim_string);
-		combo->setCurrentByIndex( 2 );
+		combo->setCurrentByIndex( 1 );
 	}
 	else if (login_last)
 	{
-		combo->setCurrentByIndex( 1 );
+		//Last
+		combo->setCurrentByIndex( 0 );
 	}
 	else
 	{
-		combo->setCurrentByIndex( 0 );
+		//Home
+		combo->setCurrentByIndex( 2 );
 	}
 
 
@@ -255,7 +256,7 @@ LLPanelLogin::LLPanelLogin(const LLRect &rect,
 	//server_choice_combo->setFocusLostCallback(onServerComboLostFocus);
 
 	childSetAction("connect_btn", onClickConnect, this);
-	childSetAction("grid_btn", onClickGrid, this);
+	//childSetAction("grid_btn", onClickGrid, this);
 
 	setDefaultBtn("connect_btn");
 
@@ -513,10 +514,10 @@ void LLPanelLogin::giveFocus()
 	if( sInstance )
 	{
 		// Grab focus and move cursor to first blank input field
-		std::string first = sInstance->childGetText("first_name_edit");
+		std::string avName = sInstance->childGetText("avatar_name_edit");
 		std::string pass = sInstance->childGetText("password_edit");
 
-		BOOL have_first = !first.empty();
+		BOOL have_first = !avName.empty();
 		BOOL have_pass = !pass.empty();
 
 		LLLineEditor* edit = NULL;
@@ -529,7 +530,7 @@ void LLPanelLogin::giveFocus()
 		else
 		{
 			// User doesn't have a name, so start there.
-			edit = sInstance->getChild<LLLineEditor>("first_name_edit");
+			edit = sInstance->getChild<LLLineEditor>("avatar_name_edit");
 		}
 
 		if (edit)
@@ -572,8 +573,7 @@ void LLPanelLogin::setFields(const std::string& firstname,
 		return;
 	}
 
-	sInstance->childSetText("first_name_edit", firstname);
-	sInstance->childSetText("last_name_edit", lastname);
+	sInstance->childSetText("avatar_name_edit", firstname + " " + lastname);
 
 	// Max "actual" password length is 16 characters.
 	// Hex digests are always 32 characters.
@@ -656,6 +656,8 @@ void LLPanelLogin::addServer(const std::string& server)
 		if (last_grid.empty()) last_grid = defaultGrid;
 		grids->setSimple(last_grid);
 	}
+	//Add this last
+	grids->add("Grid Manager");
 
 	//LLComboBox* combo = sInstance->getChild<LLComboBox>("server_combo");
 	//combo->add(server, LLSD(domain_name) );
@@ -672,15 +674,45 @@ void LLPanelLogin::getFields(std::string *firstname,
 		llwarns << "Attempted getFields with no login view shown" << llendl;
 		return;
 	}
+	std::string AvatarName = sInstance->childGetText("avatar_name_edit");
+	
+	std::vector<std::string> avNameSplit;
 
-	*firstname = sInstance->childGetText("first_name_edit");
+    int startpos=0;
+    int endpos=0;
+
+    endpos = AvatarName.find_first_of(' ', startpos);
+    while (endpos != -1)
+    {       
+        avNameSplit.push_back(AvatarName.substr(startpos, endpos-startpos)); // add to vector
+        startpos = endpos+1; //jump past sep
+        endpos = AvatarName.find_first_of(' ', startpos); // find next
+        if(endpos==-1)
+        {
+            //lastone, so no 2nd param required to go to end of string
+            avNameSplit.push_back(AvatarName.substr(startpos));
+        }
+    }
+
+	if (AvatarName.size() == 0)
+	{
+		llwarns << "Attempted getFields with no avatar name" << llendl;
+		return;
+	}
+
+	*firstname = avNameSplit[0];
+	std::string FullLastName = "";
+	for (unsigned i = 1; i < avNameSplit.size(); i++)
+    {
+		FullLastName += avNameSplit[i] + " ";
+	}
+	*lastname = FullLastName;
 	LLStringUtil::trim(*firstname);
-
-	*lastname = sInstance->childGetText("last_name_edit");
 	LLStringUtil::trim(*lastname);
 
 	*password = sInstance->mMungedPassword;
 }
+
 
 // static
 BOOL LLPanelLogin::isGridComboDirty()
@@ -729,7 +761,7 @@ void LLPanelLogin::refreshLocation( bool force_visible )
 	else
 	{
 		BOOL login_last = gSavedSettings.getBOOL("LoginLastLocation");
-		combo->setCurrentByIndex( login_last ? 1 : 0 );
+		combo->setCurrentByIndex( login_last ? 0 : 2 );
 	}
 
 	BOOL show_start = TRUE;
@@ -737,7 +769,7 @@ void LLPanelLogin::refreshLocation( bool force_visible )
 	if ( ! force_visible )
 		show_start = gSavedSettings.getBOOL("ShowStartLocation");
 
-// [RLVa:KB] - Alternate: Snowglobe-1.2.4 | Checked: 2009-07-08 (RLVa-1.0.0e)
+// [RLVa:KB] - Checked: 2009-07-08 (RLVa-1.0.0e)
 	// TODO-RLVa: figure out some way to make this work with RLV_EXTENSION_STARTLOCATION
 	#ifndef RLV_EXTENSION_STARTLOCATION
 		if (rlv_handler_t::isEnabled())
@@ -816,7 +848,6 @@ void LLPanelLogin::loadLoginPage()
 {
 	if (!sInstance) return;
 	
-
 	std::string login_page = gHippoGridManager->getCurrentGrid()->getLoginPage();
 	if (login_page.empty()) 
 	{
@@ -953,7 +984,9 @@ void LLPanelLogin::loadLoginPage()
 #endif
 	
 	LLWebBrowserCtrl* web_browser = sInstance->getChild<LLWebBrowserCtrl>("login_html");
-	
+	//Update that it exists and we CANNOT call setSiteIsAlive, otherwise we get a recursive loop
+	sInstance->mHtmlAvailable = TRUE;
+	web_browser->setVisible( TRUE );
 	// navigate to the "real" page 
 	web_browser->navigateTo( oStr.str() );
 }
@@ -990,9 +1023,8 @@ void LLPanelLogin::onClickConnect(void *)
 		// JC - Make sure the fields all get committed.
 		sInstance->setFocus(FALSE);
 
-		std::string first = sInstance->childGetText("first_name_edit");
-		std::string last  = sInstance->childGetText("last_name_edit");
-		if (!first.empty() && !last.empty())
+		std::string avName = sInstance->childGetText("avatar_name_edit");
+		if (!avName.empty())
 		{
 			// has both first and last name typed
 			sInstance->mCallback(0, sInstance->mCallbackData);
@@ -1112,7 +1144,15 @@ void LLPanelLogin::updateGridCombo(std::string grid_nick)
 		//S32 grid_index;
 		
 		grid_nick = combo->getValue().asString();
-		
+
+		if(grid_nick == "Grid Manager")
+		{
+			FloaterGridManager::getInstance()->open();
+			FloaterGridManager::getInstance()->center();
+			//Reset it to what it was previously
+			combo->setSimple(gHippoGridManager->getCurrentGrid()->getGridNick());
+			return;
+		}
 		// HippoGridInfo *gridInfo = gHippoGridManager->getGrid(mCurGrid);
 		// if (gridInfo) {
 		// 	//childSetText("gridnick", gridInfo->getGridNick());
@@ -1120,6 +1160,14 @@ void LLPanelLogin::updateGridCombo(std::string grid_nick)
 		// 	//childSetText("gridname", gridInfo->getGridName());
 		// 	LLPanelLogin::setFields( gridInfo->getFirstName(), gridInfo->getLastName(), gridInfo->getAvatarPassword(), 1 );
 		// }
+	}
+	else if(grid_nick == "Grid Manager")
+	{
+		FloaterGridManager::getInstance()->open();
+		FloaterGridManager::getInstance()->center();
+		//Reset it to what it was previously
+		combo->setSimple(gHippoGridManager->getCurrentGrid()->getGridNick());
+		return;
 	}
 	else
 	{
