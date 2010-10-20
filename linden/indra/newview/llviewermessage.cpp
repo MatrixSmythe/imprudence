@@ -152,6 +152,7 @@
 
 #include "hippoGridManager.h"
 #include "hippoLimits.h"
+#include "wlsettingsmanager.h"
 
 #if LL_WINDOWS // For Windows specific error handler
 #include "llwindebug.h"	// For the invalid message handler
@@ -3053,8 +3054,17 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 
 			if (!is_muted && !is_busy)
 			{
-				static BOOL* sUseChatBubbles = rebind_llcontrol<BOOL>("UseChatBubbles", &gSavedSettings, true);
-				visible_in_chat_bubble = *sUseChatBubbles;
+				
+				BOOL sUseChatBubbles = gSavedSettings.getBOOL("UseChatBubbles");
+ 				if(sUseChatBubbles)
+				{
+					BOOL localChat = gSavedSettings.getBOOL("UseLocalChatWithBubbles");
+					if(localChat)
+						sUseChatBubbles = FALSE; //Act like they arn't enabled and show it anyway
+				}
+				//Update..
+				visible_in_chat_bubble = sUseChatBubbles;
+
 				((LLVOAvatar*)chatter)->addChat(chat);
 			}
 		}
@@ -3506,6 +3516,7 @@ void process_teleport_finish(LLMessageSystem* msg, void**)
 
 	// Tell the LightShare handler that we have changed regions.
 	WindlightMessage::resetRegion();
+	WLSettingsManager::wlresetRegion();
 }
 
 // stuff we have to do every time we get an AvatarInitComplete from a sim
@@ -3772,6 +3783,7 @@ void process_crossed_region(LLMessageSystem* msg, void**)
 
 	// Tell the LightShare handler that we have changed regions.
 	WindlightMessage::resetRegion();
+	WLSettingsManager::wlresetRegion();
 }
 
 
