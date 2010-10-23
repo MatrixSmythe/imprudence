@@ -4,7 +4,466 @@
   
   <!-- Imprudence-specific settings -->
 
-  <key>nick01</key>
+  <!-- begin name highlighting -->
+  
+  <key>TimeOffset</key>
+  <map>
+    <key>Comment</key>
+    <string>What is the time offset of UTC?</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>S32</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+<key>UseTimeOffset</key>
+  <map>
+    <key>Comment</key>
+    <string>Use Simulator Time offset?</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+<key>TimeOffsetDST</key>
+  <map>
+    <key>Comment</key>
+    <string>Is the time offset on Day Light Savings time?</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+<key>ShowFriends</key>
+  <map>
+    <key>Comment</key>
+    <string />
+    <key>Persist</key>
+    <integer>0</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+<key>ShowIRC</key>
+  <map>
+    <key>Comment</key>
+    <string />
+    <key>Persist</key>
+    <integer>0</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+<key>FloaterGroupsRect</key>
+    <map>
+      <key>Comment</key>
+      <string>Rectangle for groups window"</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Rect</string>
+      <key>Value</key>
+      <array>
+        <integer>0</integer>
+        <integer>300</integer>
+        <integer>275</integer>
+        <integer>0</integer>
+      </array>
+    </map>
+<key>ShowGroups</key>
+    <map>
+      <key>Comment</key>
+      <string />
+      <key>Persist</key>
+      <integer>0</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+<key>UseLocalChatWithBubbles</key>
+  <map>
+    <key>Comment</key>
+    <string>Should local chat still appear even when using chat bubbles?</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+<key>UseOldChatHistory</key>
+  <map>
+    <key>Comment</key>
+    <string>Use the old style 'Chat history' window instead of the new 'Local chat' window (requires a restart).</string>
+    <key>Persist</key>
+    <integer>0</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+<key>IMTornOff</key>
+  <map>
+    <key>Comment</key>
+    <string>Show im window separately from Communicate window.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+<key>IRC_ColorChannel</key>
+		<map>
+			<key>Comment</key>
+			<string>IRC_ColorChannel</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>1.0</real>
+				<real>1.0</real>
+				<real>0.8</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ColorAction</key>
+		<map>
+			<key>Comment</key>
+			<string>IRC_ColorAction</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>1.0</real>
+				<real>0.8</real>
+				<real>1.0</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ColorPrivate</key>
+		<map>
+			<key>Comment</key>
+			<string>Color of new objects textures</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>0.8</real>
+				<real>1.0</real>
+				<real>1.0</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ColorNotice</key>
+		<map>
+			<key>Comment</key>
+			<string>Color of new objects textures</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>0.9</real>
+				<real>0.9</real>
+				<real>1.0</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ColorJoin</key>
+		<map>
+			<key>Comment</key>
+			<string>Color of new objects textures</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>1.0</real>
+				<real>0.9</real>
+				<real>0.9</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ColorQuit</key>
+		<map>
+			<key>Comment</key>
+			<string>Color of new objects textures</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>1.0</real>
+				<real>0.5</real>
+				<real>0.5</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ColorKick</key>
+		<map>
+			<key>Comment</key>
+			<string>Color of new objects textures</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>1.0</real>
+				<real>0.4</real>
+				<real>0.4</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ColorNick</key>
+		<map>
+			<key>Comment</key>
+			<string>Color of new objects textures</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>1.0</real>
+				<real>0.7</real>
+				<real>0.9</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ColorSystem</key>
+		<map>
+			<key>Comment</key>
+			<string>Color of new objects textures</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Color4</string>
+			<key>Value</key>
+			<array>
+				<real>0.7</real>
+				<real>1.0</real>
+				<real>0.7</real>
+				<real>1.0</real>
+			</array>
+		</map>
+<key>IRC_ShowChannel</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_ShowAction</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_ShowPrivate</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_ShowNotice</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_ShowJoin</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_ShowQuit</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_ShowKick</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_ShowNick</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_ShowSystem</key>
+		<map>
+			<key>Comment</key>
+			<string>Show the related IRC messages in the chat window.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>1</integer>
+		</map>
+<key>IRC_AutoReJoin</key>
+		<map>
+			<key>Comment</key>
+			<string>Automaticly accempt to reconnect to the channel you were just in if kicked. Some networks dont like this and may ban you for doing so, be carefull.</string>
+			<key>Persist</key>
+			<integer>1</integer>
+			<key>Type</key>
+			<string>Boolean</string>
+			<key>Value</key>
+			<integer>0</integer>
+		</map>
+  <key>ClassicCloudHeight</key>
+  <map>
+    <key>Comment</key>
+    <string>Height for classic particle clouds</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <integer>192</integer>
+  </map>
+  <key>ClassicCloudRange</key>
+  <map>
+    <key>Comment</key>
+    <string>Height range for classic particle clouds</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <integer>48</integer>
+  </map>
+  <key>CloudCountMax</key>
+  <map>
+    <key>Comment</key>
+    <string>Max amount of particle clouds</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <integer>20</integer>
+  </map>
+  <key>CloudVelocityScale</key>
+  <map>
+    <key>Comment</key>
+    <string>Particle cloud velocity</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+  <key>CloudDecayRate</key>
+  <map>
+    <key>Comment</key>
+    <string>Particle cloud decay rate</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <integer>-5</integer>
+  </map>
+  <key>CloudGrowRate</key>
+  <map>
+    <key>Comment</key>
+    <string>Particle cloud grow rate</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <integer>5</integer>
+  </map>
+  <key>CloudUpdateRate</key>
+  <map>
+    <key>Comment</key>
+    <string>Particle cloud update rate</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+  <key>CloudDensity</key>
+  <map>
+    <key>Comment</key>
+    <string>Particle cloud density</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <integer>25</integer>
+  </map>
+<key>nick01</key>
   <map>
     <key>Comment</key>
     <string>First Nickname for Chat Highlight</string>
@@ -102,6 +561,9 @@
       <real>1</real>
     </array>
   </map>
+
+  <!-- end name highlighting -->
+
   <key>AllowMUpose</key>
   <map>
     <key>Comment</key>
@@ -288,6 +750,17 @@
     <string>Boolean</string>
     <key>Value</key>
     <integer>1</integer>
+  </map>
+  <key>FetchInventoryOnLogin</key>
+  	<map>
+		<key>Comment</key>
+		<string>Automatically fetch the inventory in the background after login (has issues)</string>
+		<key>Persist</key>
+		<integer>1</integer>
+		<key>Type</key>
+		<string>Boolean</string>
+		<key>Value</key>
+		<integer>0</integer>
   </map>
   <key>FloaterAnimationListRect</key>
   <map>
@@ -1449,6 +1922,18 @@
     <string>String</string>
     <key>Value</key>
     <string>http://imprudenceviewer.org/app/client_list/</string>
+  </map>
+
+  <key>GridUpdateList</key>
+  <map>
+    <key>Comment</key>
+    <string>Location to download default grid options.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>String</string>
+    <key>Value</key>
+    <string>http://imprudenceviewer.org/app/grids/</string>
   </map>
 
   <key>WarnClientTags</key>

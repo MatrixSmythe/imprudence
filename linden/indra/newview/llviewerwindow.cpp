@@ -4968,7 +4968,14 @@ LLBottomPanel::LLBottomPanel(const LLRect &rect) :
 	mFactoryMap["toolbar"] = LLCallbackMap(createToolBar, NULL);
 	mFactoryMap["overlay"] = LLCallbackMap(createOverlayBar, NULL);
 	mFactoryMap["hud"] = LLCallbackMap(createHUD, NULL);
-	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_bars.xml", &getFactoryMap());
+	if (gSavedSettings.getBOOL("UseOldChatHistory"))
+	{
+		LLUICtrlFactory::getInstance()->buildPanel(this, "panel_bars2.xml", &getFactoryMap());
+	}
+	else
+	{
+		LLUICtrlFactory::getInstance()->buildPanel(this, "panel_bars.xml", &getFactoryMap());
+	}
 	
 	setOrigin(rect.mLeft, rect.mBottom);
 	reshape(rect.getWidth(), rect.getHeight());

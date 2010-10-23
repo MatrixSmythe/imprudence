@@ -43,6 +43,8 @@
 #include "llviewercontrol.h"
 #include "llimview.h"
 #include "llimpanel.h"
+#include "lggFloaterIrc.h"
+#include "llfloaternewim.h"
 
 //
 // LLFloaterMyFriends
@@ -52,6 +54,7 @@ LLFloaterMyFriends::LLFloaterMyFriends(const LLSD& seed)
 {
 	mFactoryMap["friends_panel"] = LLCallbackMap(LLFloaterMyFriends::createFriendsPanel, NULL);
 	mFactoryMap["groups_panel"] = LLCallbackMap(LLFloaterMyFriends::createGroupsPanel, NULL);
+	mFactoryMap["irc_panel"] = LLCallbackMap(LLFloaterMyFriends::createIRCPanel,NULL);
 	// do not automatically open singleton floaters (as result of getInstance())
 	BOOL no_open = FALSE;
 	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_my_friends.xml", &getFactoryMap(), no_open);
@@ -86,6 +89,11 @@ void* LLFloaterMyFriends::createGroupsPanel(void* data)
 	return new LLPanelGroups();
 }
 
+void* LLFloaterMyFriends::createIRCPanel(void* data)
+{
+	return new lggPanelIRC();
+}
+
 //
 // LLFloaterChatterBox
 //
@@ -107,7 +115,7 @@ LLFloaterChatterBox::LLFloaterChatterBox(const LLSD& seed) :
 	{
 		LLUICtrlFactory::getInstance()->buildFloater(this, "floater_chatterbox.xml", NULL, FALSE);
 	}
-	
+	bool oldChatHistory = gSavedSettings.getBOOL("UseOldChatHistory");
 	if (gSavedSettings.getBOOL("ContactsTornOff"))
 	{
 		LLFloaterMyFriends* floater_contacts = LLFloaterMyFriends::getInstance(0);
@@ -117,9 +125,24 @@ LLFloaterChatterBox::LLFloaterChatterBox(const LLSD& seed) :
 		// reparent to floater view
 		gFloaterView->addChild(floater_contacts);
 	}
-	else
+	else if(!oldChatHistory)
 	{
 		addFloater(LLFloaterMyFriends::getInstance(0), TRUE);
+	}
+	
+	if (gSavedSettings.getBOOL("IMTornOff") &&
+		gSavedSettings.getBOOL("UseOldChatHistory")) //Or the setting that doesn't use this
+	{
+		LLFloaterNewIM* floater_contacts = LLFloaterNewIM::getInstance(0);
+		// add then remove to set up relationship for re-attach
+		addFloater(floater_contacts, FALSE);
+		removeFloater(floater_contacts);
+		// reparent to floater view
+		gFloaterView->addChild(floater_contacts);
+	}
+	else if (gSavedSettings.getBOOL("UseOldChatHistory"))
+	{
+		addFloater(LLFloaterNewIM::getInstance(0), TRUE);
 	}
 
 	if (gSavedSettings.getBOOL("ChatHistoryTornOff"))

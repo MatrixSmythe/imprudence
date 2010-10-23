@@ -94,6 +94,7 @@ BOOL LLPrefsAdvanced::postBuild()
 	childSetValue("speed_rez_interval_spinner", (F32)gSavedSettings.getU32("SpeedRezInterval"));
 	childSetValue("appearance_anim_check", gSavedSettings.getBOOL("AppearanceAnimate"));
 	childSetValue("legacy_pie_menu_checkbox", gSavedSettings.getBOOL("LegacyPieEnabled"));
+	childSetValue("legacy_floater_checkbox", gSavedSettings.getBOOL("UseOldChatHistory"));
 	childSetValue("language_is_public", gSavedSettings.getBOOL("LanguageIsPublic"));
 	childSetValue("allow_mupose", gSavedSettings.getBOOL("AllowMUpose"));
 	childSetValue("auto_close_ooc", gSavedSettings.getBOOL("AutoCloseOOC"));
@@ -225,6 +226,7 @@ void LLPrefsAdvanced::apply()
 		build_pie_menus();
 	}
 
+	gSavedSettings.setBOOL("UseOldChatHistory", childGetValue("legacy_floater_checkbox").asBoolean());
 	gSavedSettings.setBOOL("CmdLineChatbarEnabled", childGetValue("command_line_check").asBoolean());
 
 	LLComboBox* crash_behavior_combobox = getChild<LLComboBox>("crash_behavior_combobox");

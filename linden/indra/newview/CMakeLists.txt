@@ -69,12 +69,8 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
-	lggautocorrectfloater.cpp
-	lggautocorrect.cpp
-	lgghunspell_wrapper.cpp
-	lggdicdownload.cpp
-	aoremotectrl.cpp
-	chatbar_as_cmdline.cpp
+    aoremotectrl.cpp
+    chatbar_as_cmdline.cpp
     emeraldboobutils.cpp
     floaterao.cpp
     floaterbusy.cpp
@@ -88,9 +84,21 @@ set(viewer_SOURCE_FILES
     hippoLimits.cpp
     hippoRestRequest.cpp
     impprefsfonts.cpp
+    IRC.cpp
     jcfloater_animation_list.cpp
     jcfloaterareasearch.cpp
     kowopenregionsettings.cpp
+    lggautocorrectfloater.cpp
+    lggautocorrect.cpp
+    lgghunspell_wrapper.cpp
+    lggFloaterIrc.cpp
+    lggFloaterIrcEdit.cpp
+    lggFloaterIrcOld.cpp
+    lggIrcData.cpp
+    lggIrcGroupHandler.cpp
+    lggIrcProfileFloater.cpp
+    lggIrcThread.cpp
+    lggdicdownload.cpp
     lightshare.cpp
     llagent.cpp
     llagentaccess.cpp
@@ -178,12 +186,14 @@ set(viewer_SOURCE_FILES
     llfloaterenvsettings.cpp
     llfloaterevent.cpp
     llfloaterfriends.cpp
+    llfloaterfriendsold.cpp
     llfloaterfonttest.cpp
     llfloatergesture.cpp
     llfloatergodtools.cpp
     llfloatergroupinfo.cpp
     llfloatergroupinvite.cpp
     llfloatergroups.cpp
+    llfloatergroupsold.cpp
     llfloaterhandler.cpp
     llfloaterhardwaresettings.cpp
     llfloaterhtml.cpp
@@ -520,7 +530,7 @@ set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
     aoremotectrl.h
-	chatbar_as_cmdline.h
+    chatbar_as_cmdline.h
     emeraldboobutils.h
     floaterao.h
     floaterbusy.h
@@ -537,10 +547,16 @@ set(viewer_HEADER_FILES
     jcfloater_animation_list.h
     jcfloaterareasearch.h
     lightshare.h
-	lggautocorrectfloater.h
-	lggautocorrect.h
-	lggdicdownload.h
-	lgghunspell_wrapper.h
+    lggautocorrectfloater.h
+    lggautocorrect.h
+    lggdicdownload.h
+    lggFloaterIrc.h
+    lggFloaterIrcEdit.h
+    lgghunspell_wrapper.h
+    lggIrcData.h
+    lggIrcGroupHandler.h
+    lggIrcProfileFloater.h
+    lggIrcThread.h
     llagent.h
     llagentaccess.h
     llagentdata.h
@@ -630,11 +646,13 @@ set(viewer_HEADER_FILES
     llfloaterevent.h
     llfloaterfonttest.h
     llfloaterfriends.h
+    llfloaterfriendsold.h
     llfloatergesture.h
     llfloatergodtools.h
     llfloatergroupinfo.h
     llfloatergroupinvite.h
     llfloatergroups.h
+    llfloatergroupsold.h
     llfloaterhandler.h
     llfloaterhardwaresettings.h
     llfloaterhtml.h

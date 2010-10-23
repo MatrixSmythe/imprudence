@@ -112,7 +112,15 @@ LLFloaterChat::LLFloaterChat(const LLSD& seed)
 	mFactoryMap["active_speakers_panel"] = LLCallbackMap(createSpeakersPanel, NULL);
 	// do not automatically open singleton floaters (as result of getInstance())
 	BOOL no_open = FALSE;
-	LLUICtrlFactory::getInstance()->buildFloater(this,"floater_chat_history.xml",&getFactoryMap(),no_open);
+	if (gSavedSettings.getBOOL("UseOldChatHistory"))
+	{
+		LLUICtrlFactory::getInstance()->buildFloater(this,"floater_chat_history_old.xml",&getFactoryMap(),no_open);
+	}
+	else
+	{
+		LLUICtrlFactory::getInstance()->buildFloater(this,"floater_chat_history.xml",&getFactoryMap(),no_open);
+	}
+
 
 	childSetCommitCallback("show mutes",onClickToggleShowMute,this); //show mutes
 	childSetCommitCallback("translate chat",onClickToggleTranslateChat,this);

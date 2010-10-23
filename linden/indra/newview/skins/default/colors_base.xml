@@ -83,7 +83,9 @@
 <ScrollbarThumbColor value="60, 76, 124, 255" />        <!-- Scroll bar -->
 <ScrollbarTrackColor value="153, 154, 158, 255" />      <!-- Scroll bar background -->
 <ScrollReadOnlyColor value="100, 100, 100, 255" />      <!-- Color for inactive but not disabled lists -->
- 
+<DefaultListText value="0, 0, 0, 255"/>
+<!-- We are replacing all the hardcoded black text with this color so we can make skins with white text on dark background -->
+
 <!-- MENUS -->
 <MenuBarBgColor value="62, 62, 62, 255" />                  <!-- Menu bar background -->
 <MenuBarGodBgColor value="62, 128, 62, 255" />              <!-- Menu bar background with God Mode enabled -->

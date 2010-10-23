@@ -216,6 +216,7 @@
 #include "hippoLimits.h"
 
 #include "lggautocorrect.h"
+#include "lggIrcGroupHandler.h"
 //
 // exported globals
 //
@@ -924,7 +925,7 @@ bool idle_startup()
 		// *FIX: these mkdir's should error check
 		gDirUtilp->setLindenUserDir(gHippoGridManager->getCurrentGridNick(), firstname, lastname);
 		LLFile::mkdir(gDirUtilp->getLindenUserDir());
-
+		
 		// Set PerAccountSettingsFile to the default value.
 		gSavedSettings.setString("PerAccountSettingsFile",
 			gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, 
@@ -956,14 +957,17 @@ bool idle_startup()
 		if (gSavedSettings.getBOOL("UseLegacyChatLogsFolder"))
 		{
 			gDirUtilp->setPerAccountChatLogsDir(LLStringUtil::null, firstname, lastname);
+			gDirUtilp->setPerAccountIRCSettingsDir(LLStringUtil::null, firstname, lastname);
 		}
 		else
 		{
 			gDirUtilp->setPerAccountChatLogsDir(gHippoGridManager->getCurrentGridNick(), firstname, lastname);
+			gDirUtilp->setPerAccountIRCSettingsDir(gHippoGridManager->getCurrentGridNick(), firstname, lastname);
 		}
 
 		LLFile::mkdir(gDirUtilp->getChatLogsDir());
 		LLFile::mkdir(gDirUtilp->getPerAccountChatLogsDir());
+		LLFile::mkdir(gDirUtilp->getPerAccountIRCSettingsDir());
 
 		//good as place as any to create user windlight directories
 		std::string user_windlight_path_name(gDirUtilp->getExpandedFilename( LL_PATH_USER_SETTINGS , "windlight", ""));
@@ -2784,6 +2788,10 @@ bool idle_startup()
 		// We're not away from keyboard, even though login might have taken
 		// a while. JC
 		gAgent.clearAFK();
+
+		//lgg starting up auto connect irc things here
+		//but that crashed.. so i duno
+		glggIrcGroupHandler.startUpAutoRunIRC();
 
 		// Have the agent start watching the friends list so we can update proxies
 		gAgent.observeFriends();

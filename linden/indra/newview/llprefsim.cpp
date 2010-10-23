@@ -198,10 +198,14 @@ void LLPrefsIMImpl::apply()
 		{
 			gDirUtilp->setPerAccountChatLogsDir(LLStringUtil::null, 
 				gSavedSettings.getString("FirstName"), gSavedSettings.getString("LastName") );
+			gDirUtilp->setPerAccountIRCSettingsDir(LLStringUtil::null, 
+				gSavedSettings.getString("FirstName"), gSavedSettings.getString("LastName") );
 		}
 		else
 		{
 			gDirUtilp->setPerAccountChatLogsDir(gHippoGridManager->getCurrentGridNick(), 
+				gSavedSettings.getString("FirstName"), gSavedSettings.getString("LastName") );
+			gDirUtilp->setPerAccountIRCSettingsDir(gHippoGridManager->getCurrentGridNick(), 
 				gSavedSettings.getString("FirstName"), gSavedSettings.getString("LastName") );
 		}
 		LLFile::mkdir(gDirUtilp->getPerAccountChatLogsDir());

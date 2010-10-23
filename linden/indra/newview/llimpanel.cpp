@@ -33,6 +33,7 @@
 #include "llviewerprecompiledheaders.h"
 
 #include "llimpanel.h"
+#include "lggIrcGroupHandler.h"
 
 #include "indra_constants.h"
 #include "llfocusmgr.h"
@@ -67,12 +68,14 @@
 #include "llresmgr.h"
 #include "lltabcontainer.h"
 #include "llviewertexteditor.h"
+#include "llviewermenu.h"		// *FIX: for is_agent_friend()
 #include "llviewermessage.h"
 #include "llviewerstats.h"
 #include "llviewercontrol.h"
 #include "lluictrlfactory.h"
 #include "llviewerwindow.h"
 #include "lllogchat.h"
+#include "llfloaterhtml.h"
 #include "llweb.h"
 #include "llhttpclient.h"
 #include "llmutelist.h"
@@ -227,6 +230,10 @@ bool send_start_session_messages(
 	const LLDynamicArray<LLUUID>& ids,
 	EInstantMessage dialog)
 {
+	if ( dialog == IM_SESSION_IRC_START )
+	{
+		return false;
+	}
 	if ( dialog == IM_SESSION_GROUP_START )
 	{
 		session_starter_helper(
@@ -1159,6 +1166,12 @@ void LLFloaterIMPanel::init(const std::string& session_label)
 		mVoiceChannel = new LLVoiceChannelGroup(mSessionUUID, mSessionLabel);
 		mIMPanelType = IM_PANEL_GROUP;
 		break;
+	case IM_SESSION_IRC_START:
+		mSessionLabel = "#"+mSessionLabel;
+		mFactoryMap["active_speakers_panel"] = LLCallbackMap(createSpeakersPanel, this);
+		xml_filename =  "floater_instant_message_ad_hoc.xml";
+		mVoiceChannel = new LLVoiceChannelGroup(mSessionUUID, mSessionLabel);
+		break;
 	case IM_SESSION_INVITE:
 		mFactoryMap["active_speakers_panel"] = LLCallbackMap(createSpeakersPanel, this);
 		if (gAgent.isInGroup(mSessionUUID))
@@ -1196,6 +1209,18 @@ void LLFloaterIMPanel::init(const std::string& session_label)
 		mVoiceChannel = new LLVoiceChannelP2P(mSessionUUID, mSessionLabel, mOtherParticipantUUID);
 		mIMPanelType = IM_PANEL_PLAIN;
 		break;
+	case IM_PRIVATE_IRC:
+		mSessionLabel = "#"+mSessionLabel;
+
+		xml_filename = "floater_instant_message.xml";
+
+		mTextIMPossible = TRUE;
+		mProfileButtonEnabled = TRUE;
+		mCallBackEnabled = FALSE;
+
+		mVoiceChannel = new LLVoiceChannelP2P(mSessionUUID, mSessionLabel, mOtherParticipantUUID);
+		break;
+
 	default:
 		llwarns << "Unknown session type" << llendl;
 		xml_filename = "floater_instant_message.xml";
@@ -1336,6 +1361,31 @@ BOOL LLFloaterIMPanel::postBuild()
 		{
 			childSetEnabled("profile_btn", FALSE);
 		}
+
+		if(IM_SESSION_IRC_START == mDialog || IM_PRIVATE_IRC == mDialog)
+		{
+// 			childSetVisible("profile_btn", FALSE);
+// 			childSetVisible("profile_callee_btn", FALSE);
+// 			childSetVisible("start_call_btn",FALSE);
+// 			childSetVisible("profile_tele_btn",FALSE);
+// 			childSetVisible("password",FALSE);
+// 			childSetVisible("otr_combo",FALSE);
+		
+			childSetEnabled("profile_callee_btn", FALSE);
+			childSetEnabled("start_call_btn",FALSE);
+			childSetEnabled("profile_tele_btn",FALSE);
+			childSetVisible("password",FALSE);
+			childSetVisible("otr_combo",FALSE);
+			if ( IM_SESSION_GROUP_START == mDialog )
+			{
+				childSetEnabled("profile_callee_btn", FALSE);
+			}
+			else if(IM_PRIVATE_IRC == mDialog)
+			{
+				childSetEnabled("profile_callee_btn",TRUE);
+
+			}
+		}
 		
 		if(!mProfileButtonEnabled)
 		{
@@ -1413,10 +1463,13 @@ void LLFloaterIMPanel::draw()
 					  && mCallBackEnabled;
 
 	// hide/show start call and end call buttons
-	childSetVisible("end_call_btn", LLVoiceClient::voiceEnabled() && mVoiceChannel->getState() >= LLVoiceChannel::STATE_CALL_STARTED);
-	childSetVisible("start_call_btn", LLVoiceClient::voiceEnabled() && mVoiceChannel->getState() < LLVoiceChannel::STATE_CALL_STARTED);
-	childSetEnabled("start_call_btn", enable_connect);
-	childSetEnabled("send_btn", !childGetValue("chat_editor").asString().empty());
+	if(mDialog!=IM_SESSION_IRC_START && mDialog!=IM_PRIVATE_IRC)
+	{
+		childSetVisible("end_call_btn", LLVoiceClient::voiceEnabled() && mVoiceChannel->getState() >= LLVoiceChannel::STATE_CALL_STARTED);
+		childSetVisible("start_call_btn", LLVoiceClient::voiceEnabled() && mVoiceChannel->getState() < LLVoiceChannel::STATE_CALL_STARTED);
+		childSetEnabled("start_call_btn", enable_connect);
+		childSetEnabled("send_btn", !childGetValue("chat_editor").asString().empty());
+	}
 	
 	LLPointer<LLSpeaker> self_speaker = mSpeakers->findSpeaker(gAgent.getID());
 	if(!mTextIMPossible)
@@ -1907,14 +1960,17 @@ void LLFloaterIMPanel::onCommitCombo(LLUICtrl* caller, void* userdata)
 		{
 			if (caller->getValue().asString() == "pay_entry")
 			{
+				if(	glggIrcGroupHandler.sendWhoisToAll(self->getOtherParticipantID())) return;
 				handle_pay_by_id(self->getOtherParticipantID());
 			}
 			else if (caller->getValue().asString() == "teleport_entry")
 			{
+				if(	glggIrcGroupHandler.sendWhoisToAll(self->getOtherParticipantID())) return;
 				handle_lure(self->getOtherParticipantID());
 			}
 			else if (caller->getValue().asString() == self->getString("add_friend_string"))
 			{
+				if(	glggIrcGroupHandler.sendWhoisToAll(self->getOtherParticipantID())) return;
 				std::string fullname = self->getTitle();
 				LLPanelFriends::requestFriendshipDialog(self->getOtherParticipantID(), fullname);
 			}
@@ -2022,7 +2078,11 @@ void deliver_message(const std::string& utf8_text,
 		// default to IM_SESSION_SEND unless it's nothing special - in
 		// which case it's probably an IM to everyone.
 		U8 new_dialog = dialog;
-
+		if ( dialog == IM_SESSION_IRC_START)
+		{
+			glggIrcGroupHandler.sendIrcChatByID(im_session_id,utf8_text);
+			return;
+		}
 		if ( dialog != IM_NOTHING_SPECIAL )
 		{
 			new_dialog = IM_SESSION_SEND;
@@ -2157,10 +2217,16 @@ void LLFloaterIMPanel::sendMsg()
 
 			if ( mSessionInitialized )
 			{
-				deliver_message(utf8_text,
-								mSessionUUID,
-								mOtherParticipantUUID,
-								mDialog);
+				if( mDialog == IM_PRIVATE_IRC)
+				{
+					glggIrcGroupHandler.trySendPrivateImToID(utf8_text,mOtherParticipantUUID,false);
+				}
+				else
+                    // *FIXME: Queue messages if IM is not IM_NOTHING_SPECIAL
+                    deliver_message(utf8_text,
+							mSessionUUID,
+							mOtherParticipantUUID,
+							mDialog);
 
 				// local echo
 				if((mDialog == IM_NOTHING_SPECIAL) && 
@@ -2242,6 +2308,10 @@ void LLFloaterIMPanel::processSessionUpdate(const LLSD& session_update)
 void LLFloaterIMPanel::setSpeakers(const LLSD& speaker_list)
 {
 	mSpeakers->setSpeakers(speaker_list);
+}
+void LLFloaterIMPanel::setIRCSpeakers(const LLSD& speaker_list)
+{
+	mSpeakers->setIrcSpeakers(speaker_list);
 }
 
 void LLFloaterIMPanel::sessionInitReplyReceived(const LLUUID& session_id)
@@ -2343,6 +2413,12 @@ void LLFloaterIMPanel::processIMTyping(const LLIMInfo* im_info, BOOL typing)
 		// other user stopped typing
 		removeTypingIndicator(im_info);
 	}
+
+	// user is online, enable teleport button
+	if(mDialog == IM_NOTHING_SPECIAL)
+	{
+		childSetEnabled("profile_tele_btn", true);
+	}
 }
 
 
@@ -2412,6 +2488,26 @@ void LLFloaterIMPanel::chatFromLogFile(LLLogChat::ELogLineType type, std::string
 
 	//self->addHistoryLine(line, LLColor4::grey, FALSE);
 	self->mHistoryEditor->appendColoredText(message, false, true, LLColor4::grey);
+}
+
+// user is known to be offline when we receive this
+void LLFloaterIMPanel::setOffline()
+{
+	if(!gAgent.isGodlike())
+	{
+		childSetEnabled("profile_tele_btn", false);
+	}
+#if USE_OTR       // [$PLOTR$]
+    llinfos << "$PLOTR$ friend went offline" << llendl;
+    if (gOTR)
+    {
+        ConnContext *context = getOtrContext();
+        if (context && (context->msgstate == OTRL_MSGSTATE_ENCRYPTED))
+        {
+            pretendTheyOtrStop();
+        }
+    }
+#endif // USE_OTR // [/$PLOTR$]
 }
 
 void LLFloaterIMPanel::showSessionStartError(

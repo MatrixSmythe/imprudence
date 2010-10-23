@@ -70,6 +70,7 @@
 #include "llviewerregion.h"
 
 #include "llfirstuse.h"
+#include "lggIrcGroupHandler.h"
 
 // [RLVa:KB]
 #include "rlvhandler.h"
@@ -79,6 +80,8 @@
 // Globals
 //
 LLIMMgr* gIMMgr = NULL;
+const EInstantMessage GROUP_DIALOG = IM_SESSION_GROUP_START;
+const EInstantMessage DEFAULT_DIALOG = IM_NOTHING_SPECIAL;
 
 //
 // Statics
@@ -98,10 +101,10 @@ std::map<std::string,std::string> LLFloaterIM::sForceCloseSessionMap;
 //
 
 // returns true if a should appear before b
-//static BOOL group_dictionary_sort( LLGroupData* a, LLGroupData* b )
-//{
-//	return (LLStringUtil::compareDict( a->mName, b->mName ) < 0);
-//}
+static BOOL group_dictionary_sort( LLGroupData* a, LLGroupData* b )
+{
+	return (LLStringUtil::compareDict( a->mName, b->mName ) < 0);
+}
 
 class LLViewerChatterBoxInvitationAcceptResponder :
 	public LLHTTPClient::Responder
@@ -203,6 +206,10 @@ LLUUID LLIMMgr::computeSessionID(
 	const LLUUID& other_participant_id)
 {
 	LLUUID session_id;
+	if( IM_SESSION_IRC_START == dialog)
+	{
+		session_id = other_participant_id;
+	}else
 	if (IM_SESSION_GROUP_START == dialog)
 	{
 		// slam group session_id to the group_id (other_participant_id)
@@ -906,6 +913,9 @@ void LLIMMgr::removeSession(const LLUUID& session_id)
 	LLFloaterIMPanel* floater = findFloaterBySession(session_id);
 	if(floater)
 	{
+		//Tell the IRC module about it
+		glggIrcGroupHandler.endDownIRCListener(session_id);
+
 		mFloaters.erase(floater->getHandle());
 		LLFloaterChatterBox::getInstance(LLSD())->removeFloater(floater);
 		//mTabContainer->removeTabPanel(floater);
@@ -1035,6 +1045,56 @@ void LLIMMgr::onInviteNameLookup(const LLUUID& id, const std::string& first, con
 
 void LLIMMgr::refresh()
 {
+	if (gSavedSettings.getBOOL("UseOldChatHistory"))
+	{
+	LLFloaterNewIM* floaterimp = LLFloaterNewIM::getInstance(LLSD());
+
+	if (!floaterimp) return;
+
+	S32 old_scroll_pos = floaterimp->getScrollPos();
+	floaterimp->clearAllTargets();
+
+	// build a list of groups.
+	LLLinkedList<LLGroupData> group_list( group_dictionary_sort );
+
+	LLGroupData* group;
+	S32 count = gAgent.mGroups.count();
+	S32 i;
+	// read/sort groups on the first pass.
+	for(i = 0; i < count; ++i)
+	{
+		group = &(gAgent.mGroups.get(i));
+		group_list.addDataSorted( group );
+	}
+
+	// add groups to the floater on the second pass.
+	for(group = group_list.getFirstData();
+		group;
+		group = group_list.getNextData())
+	{
+		floaterimp->addGroup(group->mID, (void*)(&GROUP_DIALOG), TRUE, FALSE);
+	}
+
+	// build a set of buddies in the current buddy list.
+	LLCollectAllBuddies collector;
+	LLAvatarTracker::instance().applyFunctor(collector);
+	LLCollectAllBuddies::buddy_map_t::iterator it;
+	LLCollectAllBuddies::buddy_map_t::iterator end;
+	it = collector.mOnline.begin();
+	end = collector.mOnline.end();
+	for( ; it != end; ++it)
+	{
+		floaterimp->addAgent((*it).second, (void*)(&DEFAULT_DIALOG), TRUE);
+	}
+	it = collector.mOffline.begin();
+	end = collector.mOffline.end();
+	for( ; it != end; ++it)
+	{
+		floaterimp->addAgent((*it).second, (void*)(&DEFAULT_DIALOG), FALSE);
+	}
+
+	floaterimp->setScrollPos( old_scroll_pos );
+	}
 }
 
 void LLIMMgr::setFloaterOpen(BOOL set_open)
@@ -1207,6 +1267,10 @@ LLFloaterIMPanel* LLIMMgr::createFloater(
 	{
 		llwarns << "Creating LLFloaterIMPanel with null session ID" << llendl;
 	}
+	if(glggIrcGroupHandler.trySendPrivateImToID("",other_participant_id,true))
+	{
+		dialog = IM_PRIVATE_IRC;
+	}
 
 	llinfos << "LLIMMgr::createFloater: from " << other_participant_id 
 			<< " in session " << session_id << llendl;
@@ -1232,7 +1296,10 @@ LLFloaterIMPanel* LLIMMgr::createFloater(
 	{
 		llwarns << "Creating LLFloaterIMPanel with null session ID" << llendl;
 	}
-
+	if(glggIrcGroupHandler.trySendPrivateImToID("",other_participant_id,true))
+	{
+		dialog = IM_PRIVATE_IRC;
+	}
 	llinfos << "LLIMMgr::createFloater: from " << other_participant_id 
 			<< " in session " << session_id << llendl;
 	LLFloaterIMPanel* floater = new LLFloaterIMPanel(session_label,
@@ -1270,6 +1337,7 @@ void LLIMMgr::noteOfflineUsers(
 				offline.setArg("[FIRST]", first);
 				offline.setArg("[LAST]", last);
 				floater->addHistoryLine(offline, gSavedSettings.getColor4("SystemChatColor"));
+				floater->setOffline();
 			}
 		}
 	}

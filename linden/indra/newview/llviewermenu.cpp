@@ -105,6 +105,8 @@
 #include "llfloatereditui.h"
 #include "llfloaterchatterbox.h"
 #include "llfloaterfriends.h"
+#include "llfloaterfriendsold.h"
+#include "llfloatergroupsold.h"
 #include "llfloaterfonttest.h"
 #include "llfloatergesture.h"
 #include "llfloatergodtools.h"
@@ -5920,7 +5922,14 @@ class LLShowFloater : public view_listener_t
 		}
 		else if (floater_name == "friends")
 		{
-			LLFloaterMyFriends::toggleInstance(0);
+			if (gSavedSettings.getBOOL("UseOldChatHistory"))
+			{
+				LLFloaterFriends::toggle();
+			}
+			else
+			{
+				LLFloaterMyFriends::toggleInstance(0);
+			}
 		}
 		else if (floater_name == "preferences")
 		{
@@ -6087,7 +6096,14 @@ class LLFloaterVisible : public view_listener_t
 		bool new_value = false;
 		if (floater_name == "friends")
 		{
-			new_value = LLFloaterMyFriends::instanceVisible(0);
+			if (gSavedSettings.getBOOL("UseOldChatHistory"))
+			{
+				new_value = LLFloaterFriends::visible();
+			}
+			else
+			{
+				new_value = LLFloaterMyFriends::instanceVisible(0);
+			}
 		}
 		else if (floater_name == "communicate")
 		{
@@ -6260,7 +6276,14 @@ class LLShowAgentGroups : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLFloaterMyFriends::toggleInstance(1);
+		if (gSavedSettings.getBOOL("UseOldChatHistory"))
+		{
+			LLFloaterGroups::toggle();
+		}
+		else
+		{
+			LLFloaterMyFriends::toggleInstance(1);
+		}
 		return true;
 	}
 };
