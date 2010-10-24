@@ -123,6 +123,8 @@
 #include "llfloaterland.h"
 #include "llfloaterlandholdings.h"
 #include "llfloatermap.h"
+#include "llfloatermessagebuilder.h"
+#include "llfloatermessagelog.h"
 #include "llfloatermute.h"
 #include "llfloateropenobject.h"
 #include "llfloaterpermissionsmgr.h"
@@ -396,6 +398,8 @@ void handle_god_mode(void*);
 // God menu
 void handle_leave_god_mode(void*);
 
+void handle_open_message_log(void*);
+void handle_open_message_builder(void*);
 BOOL is_inventory_visible( void* user_data );
 void handle_reset_view();
 
@@ -777,6 +781,11 @@ void init_client_menu(LLMenuGL* menu)
 		sub->append(new LLMenuItemCallGL("Notifications Console...",
 						 &handle_show_notifications_console, NULL, NULL, '5', MASK_CONTROL|MASK_SHIFT ));
 		
+
+		sub->appendSeparator();
+
+		sub->append(new LLMenuItemCallGL(  "Message Log", &handle_open_message_log, NULL));
+		sub->append(new LLMenuItemCallGL(  "Message Builder", &handle_open_message_builder, NULL));	
 
 		sub->appendSeparator();
 
@@ -3282,6 +3291,16 @@ void process_grant_godlike_powers(LLMessageSystem* msg, void**)
 	}
 }
 
+
+void handle_open_message_log(void*)
+{
+	LLFloaterMessageLog::show();
+}
+
+void handle_open_message_builder(void*)
+{
+	LLFloaterMessageBuilder::show("");
+}
 /*
 class LLHaveCallingcard : public LLInventoryCollectFunctor
 {
@@ -8695,6 +8714,30 @@ class LLAdvancedDumpInfoToConsole : public view_listener_t
 
 
 
+/////////////////////////
+// MESSAGE LOG/BUILDER //
+/////////////////////////
+
+
+class LLMessageLogBuilder : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		std::string info_type = userdata.asString();
+		if ("MessageLog" == info_type)
+		{
+			handle_open_message_log(NULL);
+		}
+		else if ("MessageBuilder" == info_type)
+		{
+			handle_open_message_builder(NULL);
+		}
+		return true;
+	}
+};
+
+
+
 ///////////////////////////////
 // RELOAD SETTINGS OVERRIDES //
 ///////////////////////////////
@@ -11283,6 +11326,8 @@ void initialize_menus()
 	addMenu(new LLAdvancedToggleConsole(), "Advanced.ToggleConsole");
 	addMenu(new LLAdvancedCheckConsole(), "Advanced.CheckConsole");
 	addMenu(new LLAdvancedDumpInfoToConsole(), "Advanced.DumpInfoToConsole");
+	addMenu(new LLMessageLogBuilder(), "Advanced.MessageLog");
+	addMenu(new LLMessageLogBuilder(), "Advanced.MessageBuilder");
 	addMenu(new LLAdvancedReloadSettingsOverrides(), "Advanced.ReloadSettingsOverrides");
 	addMenu(new LLAdvancedToggleSit(), "Advanced.ToggleSit");
 	addMenu(new LLAdvancedCheckSit(), "Advanced.CheckSit");
