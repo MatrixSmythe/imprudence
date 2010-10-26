@@ -1174,16 +1174,6 @@ bool LLAppViewer::mainLoop()
 
 bool LLAppViewer::cleanup()
 {
-	//----------------------------------------------
-	//this test code will be removed after the test
-	//test manual call stack tracer
-	if(gSavedSettings.getBOOL("QAMode"))
-	{
-		LLError::LLCallStacks::print() ;
-	}
-	//end of the test code
-	//----------------------------------------------
-
 	//flag all elements as needing to be destroyed immediately
 	// to ensure shutdown order
 	LLMortician::setZealous(TRUE);
@@ -2790,7 +2780,9 @@ void LLAppViewer::forceQuit()
 
 	LL_INFOS("forceQuit") << "Destroying the entire world" << LL_ENDL;
 	if (mQuitRequested)
-	LLApp::setQuitting(); 
+	{
+		LLApp::setQuitting();
+	}
 	else
 	{
 		if (mLogoutRequested) //we just finished a logout request
@@ -3748,15 +3740,6 @@ void LLAppViewer::idleShutdown()
 	{
 		mQuitRequested=true;
 		forceQuit();
-	}
-
-
-	static bool saved_snapshot = false;
-	if (!saved_snapshot)
-	{
-		saved_snapshot = true;
-		saveFinalSnapshot();
-		return;
 	}
 
 	// Attempt to close all floaters that might be

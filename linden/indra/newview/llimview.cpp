@@ -620,11 +620,11 @@ void LLIMMgr::addMessage(
 	// create IM window as necessary
 	if(!floater)
 	{
-		if (!mIgnoreGroupList.empty())
+		if (gIMMgr->getIgnoreGroupListCount() > 0 && gAgent.isInGroup(session_id))
 		{
 			// Check to see if we're blocking this group's chat
-			LLGroupData *group_data = NULL;
-
+			LLGroupData* group_data = NULL;
+			
 			// Search for this group in the agent's groups list
 			LLDynamicArray<LLGroupData>::iterator i;
 
@@ -638,9 +638,8 @@ void LLIMMgr::addMessage(
 			}
 
 			// If the group is in our list then return
-			if (group_data && getIgnoreGroup(group_data->mID))
+			if (group_data && gIMMgr->getIgnoreGroup(group_data->mID))
 			{
-				// llinfos << "ignoring chat from group " << group_data->mID << llendl;
 				return;
 			}
 		}
@@ -1451,7 +1450,7 @@ void LLIMMgr::saveIgnoreGroup()
 	}
 }
 
-void LLIMMgr::updateIgnoreGroup(const LLUUID& group_id, const bool& ignore)
+void LLIMMgr::updateIgnoreGroup(const LLUUID& group_id, bool ignore)
 {
 	if (group_id.notNull())
 	{
