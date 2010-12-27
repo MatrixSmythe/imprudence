@@ -14,6 +14,7 @@ public:
 	const S32&	getMaxLinkedPrims() const { return mMaxLinkedPrims; }
 	const S32&	getMaxPhysLinkedPrims() const { return mMaxPhysLinkedPrims; }
 	const F32&	getMaxInventoryItemsTransfer() const { return mMaxInventoryItemsTransfer; }
+	const std::string& getVoiceConnector()  const { return mVoiceConnector; }
 	
 
 	// Returns the max prim size we can use on a grid
@@ -59,6 +60,7 @@ public:
 	BOOL    mEnableTeenMode;
 	BOOL    mEnforceMaxBuild;
 	BOOL    mRenderWater;
+	std::string    mVoiceConnector;
 
 private:
 	void	setOpenSimLimits();

@@ -55,7 +55,7 @@ HippoGridInfo::HippoGridInfo(const std::string& gridNick) :
 	mLastName(LLStringUtil::null),
 	mAvatarPassword(LLStringUtil::null),
 	mXmlState(XML_VOID),
-	mVoiceConnector("SLVoice"),
+	mVoiceConnector("SLVoice.exe"),
 	mRenderCompat(true),
 	mMaxAgentGroups(-1),
 	mCurrencySymbol("OS$"),

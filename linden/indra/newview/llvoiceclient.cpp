@@ -62,6 +62,7 @@
 #include "llfirstuse.h"
 #include "llviewerwindow.h"
 #include "llviewercamera.h"
+#include "hippolimits.h"
 
 #include "llfloaterfriends.h"  //VIVOX, inorder to refresh communicate panel
 #include "llfloaterchat.h"		// for LLFloaterChat::addChat()
@@ -1525,6 +1526,16 @@ void LLVoiceClient::setState(state inState)
 	mState = inState;
 }
 
+void LLVoiceClient::close()
+{
+	setState(stateDisableCleanup);
+}
+
+void LLVoiceClient::start()
+{
+	setState(stateStart);
+}
+
 void LLVoiceClient::stateMachine()
 {
 	if(gDisconnected)
@@ -1655,7 +1666,7 @@ void LLVoiceClient::stateMachine()
 					std::string exe_path = gDirUtilp->getExecutableDir();
 					exe_path += gDirUtilp->getDirDelimiter();
 #if LL_WINDOWS
-					exe_path += "SLVoice.exe";
+					exe_path += gSavedSettings.getString("VoiceModule");
 #elif LL_DARWIN
 					exe_path += "../Resources/SLVoice";
 #else
@@ -1687,7 +1698,7 @@ void LLVoiceClient::stateMachine()
 						STARTUPINFOA sinfo;
 						memset(&sinfo, 0, sizeof(sinfo));
 						std::string exe_dir = gDirUtilp->getAppRODataDir();
-						cmd = "SLVoice.exe";
+						cmd = gSavedSettings.getString("VoiceModule");
 						cmd += args;
 						
 						// So retarded.  Windows requires that the second parameter to CreateProcessA be a writable (non-const) string...

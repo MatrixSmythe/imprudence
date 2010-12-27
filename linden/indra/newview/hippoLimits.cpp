@@ -21,7 +21,8 @@ HippoLimits::HippoLimits()
 	mMaxHollow(0.95f),
 	mMinPrimScale(0.001f),
 	mMaxPrimScale(256.0f),
-	mMaxLinkedPrims(-1)
+	mMaxLinkedPrims(-1),
+	mVoiceConnector("SLVoice.exe")
 {
 	setLimits();
 }
@@ -67,6 +68,7 @@ void HippoLimits::setOpenSimLimits()
 	mEnableTeenMode = FALSE;
 	mEnforceMaxBuild = FALSE;
 	mRenderWater = TRUE;
+	mVoiceConnector = "SLVoice.exe";
 
 	if (gHippoGridManager->getConnectedGrid()->isRenderCompat()) {
 		llinfos << "Using rendering compatible OpenSim limits" << llendl;
@@ -107,6 +109,7 @@ void HippoLimits::setSecondLifeLimits()
 	mEnableTeenMode = FALSE;
 	mEnforceMaxBuild = FALSE;
 	mRenderWater = TRUE;
+	mVoiceConnector = "SLVoice.exe";
 }
 
 F32 HippoLimits::getMaxPrimScale() const
