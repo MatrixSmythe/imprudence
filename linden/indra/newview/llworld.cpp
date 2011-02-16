@@ -80,12 +80,12 @@ const S32 WORLD_PATCH_SIZE = 16;
 
 extern LLColor4U MAX_WATER_COLOR;
 
-const U32 LLWorld::mWidth = 256;
+U32 LLWorld::mWidth = 256;
 
 // meters/point, therefore mWidth * mScale = meters per edge
 const F32 LLWorld::mScale = 1.f;
 
-const F32 LLWorld::mWidthInMeters = mWidth * mScale;
+F32 LLWorld::mWidthInMeters = mWidth * mScale;
 
 //
 // Functions
@@ -140,7 +140,7 @@ F32	LLWorld::getRegionMaxHeight() const
 	return gHippoLimits->getMaxHeight();
 }
 
-LLViewerRegion* LLWorld::addRegion(const U64 &region_handle, const LLHost &host)
+LLViewerRegion* LLWorld::addRegion(const U64 &region_handle, const LLHost &host, const U32 &region_size_x, const U32 &region_size_y)
 {
 	LLMemType mt(LLMemType::MTYPE_REGIONS);
 	
@@ -172,9 +172,11 @@ LLViewerRegion* LLWorld::addRegion(const U64 &region_handle, const LLHost &host)
 
 	U32 iindex = 0;
 	U32 jindex = 0;
+	mWidth = region_size_x;
+	mWidthInMeters = mWidth * mScale;
 	from_region_handle(region_handle, &iindex, &jindex);
-	S32 x = (S32)(iindex/mWidth);
-	S32 y = (S32)(jindex/mWidth);
+	S32 x = (S32)(iindex/256);
+	S32 y = (S32)(jindex/256);
 	llinfos << "Adding new region (" << x << ":" << y << ")" << llendl;
 	llinfos << "Host: " << host << llendl;
 
@@ -902,7 +904,7 @@ void LLWorld::updateWaterObjects()
 	}
 
 	// Region width in meters.
-	S32 const rwidth = (S32)REGION_WIDTH_U32;
+	S32 rwidth = (S32)mWidth;
 
 	// The distance we might see into the void
 	// when standing on the edge of a region, in meters.
@@ -916,7 +918,7 @@ void LLWorld::updateWaterObjects()
 	//
 	// Set 'range' to draw_distance, rounded up to the nearest multiple of rwidth.
 	S32 const nsims = (draw_distance + rwidth - 1) / rwidth;
-	S32 const range = nsims * rwidth;
+	//S32 const range = nsims * rwidth;
 
 	// Get South-West corner of current region.
 	LLViewerRegion const* regionp = gAgent.getRegion();
@@ -924,10 +926,10 @@ void LLWorld::updateWaterObjects()
 	from_region_handle(regionp->getHandle(), &region_x, &region_y);
 
 	// The min. and max. coordinates of the South-West corners of the Hole water objects.
-	S32 const min_x = (S32)region_x - range;
-	S32 const min_y = (S32)region_y - range;
-	S32 const max_x = (S32)region_x + range;
-	S32 const max_y = (S32)region_y + range;
+	//S32 const min_x = (S32)region_x - range;
+	//S32 const min_y = (S32)region_y - range;
+	//S32 const max_x = (S32)region_x + range;
+	//S32 const max_y = (S32)region_y + range;
 
 	// Attempt to determine a sensible water height for all the
 	// Hole Water objects.
@@ -1100,6 +1102,7 @@ void LLWorld::updateWaterObjects()
 	}
 	mHoleWaterObjects.clear();
 
+/* TEMPORARY! disabled void water -Patrick Sapinski (2/11/2011)
 	// Let the Edge and Hole water boxes be 1024 meter high so that they
 	// are never too small to be drawn (A LL_VO_*_WATER box has water
 	// rendered on it's bottom surface only), and put their bottom at
@@ -1166,6 +1169,7 @@ void LLWorld::updateWaterObjects()
 
 		gObjectList.updateActive(waterp);
 	}
+	*/
 }
 
 void LLWorld::shiftRegions(const LLVector3& offset)
@@ -1256,9 +1260,22 @@ void process_enable_simulator(LLMessageSystem *msg, void **user_data)
 	// which simulator should we modify?
 	LLHost sim(ip_u32, port);
 
+	//Aurora-Sim feature, custom region sizes - Patrick Sapinski (2/7/2011)
+	U32 region_size_x = 256;
+	msg->getU32(_PREHASH_SimulatorInfo, "RegionSizeX", region_size_x);
+	U32 region_size_y = 256;
+	msg->getU32(_PREHASH_SimulatorInfo, "RegionSizeY", region_size_y);
+
+	//and a little hack for Second Life compatibility
+	if (region_size_y == 0 || region_size_x == 0)
+	{
+		region_size_x = 256;
+		region_size_y = 256;
+	}
+
 	// Viewer trusts the simulator.
 	msg->enableCircuit(sim, TRUE);
-	LLWorld::getInstance()->addRegion(handle, sim);
+	LLWorld::getInstance()->addRegion(handle, sim, region_size_x, region_size_y);
 
 	// give the simulator a message it can use to get ip and port
 	llinfos << "simulator_enable() Enabling " << sim << " with code " << msg->getOurCircuitCode() << llendl;
