@@ -665,6 +665,8 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 			LLWorldMap::getInstance()->mSimInfoMap[handle] = siminfo;
 
 			siminfo->mHandle = handle;
+			siminfo->msizeX = 256;
+			siminfo->msizeY = 256;
 			siminfo->mName.assign( name );
 			siminfo->mAccess = accesscode;
 			siminfo->mRegionFlags = region_flags;

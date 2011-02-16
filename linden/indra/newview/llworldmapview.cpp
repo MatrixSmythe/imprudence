@@ -567,17 +567,20 @@ void LLWorldMapView::draw()
 		center_global.mdV[VX] += 128.0;
 		center_global.mdV[VY] += 128.0;
 
-		S32 draw_size = llround(sMapScale);
+		S32 x_draw_size = llround(sMapScale);
+		S32 y_draw_size = llround(sMapScale);
+		x_draw_size *= info->msizeX / REGION_WIDTH_METERS;
+		y_draw_size *= info->msizeY / REGION_WIDTH_METERS;
 		if (simimage != NULL)
 		{
 			simimage->setBoostLevel(LLViewerImageBoostLevel::BOOST_MAP);
-			simimage->setKnownDrawSize(llround(draw_size * LLUI::sGLScaleFactor.mV[VX]), llround(draw_size * LLUI::sGLScaleFactor.mV[VY]));
+			simimage->setKnownDrawSize(llround(x_draw_size * LLUI::sGLScaleFactor.mV[VX]), llround(y_draw_size * LLUI::sGLScaleFactor.mV[VY]));
 		}
 
 		if (overlayimage != NULL)
 		{
 			overlayimage->setBoostLevel(LLViewerImageBoostLevel::BOOST_MAP);
-			overlayimage->setKnownDrawSize(llround(draw_size * LLUI::sGLScaleFactor.mV[VX]), llround(draw_size * LLUI::sGLScaleFactor.mV[VY]));
+			overlayimage->setKnownDrawSize(llround(x_draw_size * LLUI::sGLScaleFactor.mV[VX]), llround(y_draw_size * LLUI::sGLScaleFactor.mV[VY]));
 		}
 			
 // 		LLTextureView::addDebugImage(simimage);
